@@ -474,12 +474,14 @@ class SettingsMixin:
             is_default=model.is_default,
         )
         if ai_model:
-            for key in model.__dict__.keys():
+            kwargs = {}
+            for key, value in model.__dict__.items():
                 if key != "_sa_instance_state":
-                    setattr(ai_model, key, getattr(model, key))
-            ai_model.save()
-        else:
-            model.save()
+                    kwargs[key] = value
+            AIModels.objects.update(
+                ai_model.id,
+                **kwargs
+            )
         self.__settings_updated()
 
     def update_generator_settings(self, column_name, val):

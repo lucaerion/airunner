@@ -24,8 +24,7 @@ print(user.username)
 
 # For DB mutation or flag_modified
 user_orm = User.objects.get_orm(user_id)
-user_orm.username = "newname"
-user_orm.save()
+User.objects.update(username="newname")
 ```
 
 ### Rationale

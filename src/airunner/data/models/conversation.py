@@ -147,7 +147,7 @@ class Conversation(BaseModel):
             user_id = user.id
             user_username = user.username
 
-        conversation = cls(
+        conversation = cls.objects.create(
             timestamp=datetime.datetime.now(datetime.timezone.utc),
             title="",
             key="",
@@ -157,7 +157,6 @@ class Conversation(BaseModel):
             chatbot_name=chatbot_botname,
             user_name=user_username,
         )
-        conversation.save()
         conversation = (
             cls.objects.options(joinedload(cls.summaries))
             .order_by(cls.id.desc())

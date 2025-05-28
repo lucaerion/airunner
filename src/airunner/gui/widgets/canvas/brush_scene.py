@@ -269,14 +269,11 @@ class BrushScene(CustomScene):
                     self.api.art.canvas.generate_mask()
 
         # Ensure changes are saved to database
-        if hasattr(drawing_pad_settings, "save") and callable(
-            drawing_pad_settings.save
-        ):
-            drawing_pad_settings.save()
-        else:
-            logging.warning(
-                f"drawing_pad_settings is not a model instance: {type(drawing_pad_settings)}. Skipping save()."
+        DrawingPadSettings.objects.update(
+            drawing_pad_settings.id, **drawing_pad_settings.dict(
+                exclude={"id", "created_at", "updated_at"}
             )
+        )
 
         # Emit signals to refresh related UI
         self.api.art.canvas.image_updated()
