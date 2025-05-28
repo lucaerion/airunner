@@ -243,19 +243,18 @@ AIRUNNER_DISCORD_URL = os.environ.get(
 )
 AIRUNNER_SLEEP_TIME_IN_MS = os.environ.get("AIRUNNER_SLEEP_TIME_IN_MS", 10)
 
-default_name = "airunner.db"
-if DEV_ENV:
-    default_name = "airunner.dev.db"
-AIRUNNER_DB_NAME = os.environ.get("AIRUNNER_DB_NAME", default_name)
+# Set AIRUNNER_DATABASE_URL for Alembic and app compatibility
+if not os.environ.get("AIRUNNER_DATABASE_URL"):
+    default_name = "airunner.db"
+    DEV_ENV = os.environ.get("DEV_ENV", "1") == "1"
+    if DEV_ENV:
+        default_name = "airunner.dev.db"
+    AIRUNNER_DB_NAME = os.environ.get("AIRUNNER_DB_NAME", default_name)
+    db_path = os.path.expanduser(os.path.join("~", ".local", "share", "airunner", "data", AIRUNNER_DB_NAME))
+    os.environ["AIRUNNER_DATABASE_URL"] = f"sqlite:///{db_path}"
 
-# Set the database URL
-DB_PATH = os.path.expanduser(
-    os.path.join("~", ".local", "share", "airunner", "data", AIRUNNER_DB_NAME)
-)
-default_url = "sqlite:///" + DB_PATH
-AIRUNNER_DB_URL = os.environ.get("AIRUNNER_DATABASE_URL", default_url)
-if AIRUNNER_DB_URL == "" or not AIRUNNER_DB_URL:
-    AIRUNNER_DB_URL = default_url
+# Provide AIRUNNER_DB_URL for import by other modules
+AIRUNNER_DB_URL = os.environ["AIRUNNER_DATABASE_URL"]
 
 # LLM Behavior Control
 AIRUNNER_LLM_AGENT_MAX_FUNCTION_CALLS = int(

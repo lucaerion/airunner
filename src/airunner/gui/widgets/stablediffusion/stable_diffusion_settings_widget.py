@@ -166,8 +166,7 @@ class StableDiffusionSettingsWidget(BaseWidget, PipelineMixin):
         generator_settings.version = val
 
         if model is not None:
-            generator_settings.model = model.id
-            generator_settings.save()
+            self.update_generator_settings("model", model.id)
 
         self.load_models()
 

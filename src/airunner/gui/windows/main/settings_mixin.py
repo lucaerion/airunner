@@ -609,7 +609,10 @@ class SettingsMixin:
         if model_class_.objects.first() is None:
             model_class_.objects.create()
 
-        setting = model_class_.objects.order_by(model_class_.id.desc()).first()
+        try:
+            setting = model_class_.objects.order_by(model_class_.id.desc()).first()
+        except Exception as e:
+            return
         if setting:
             model_class_.objects.update(setting.id, **{name: value})
             self.__settings_updated(model_class_.__tablename__, name, value)

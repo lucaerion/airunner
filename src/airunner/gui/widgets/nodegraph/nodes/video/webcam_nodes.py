@@ -182,16 +182,17 @@ class WebcamDisplayWidget(NodeBaseWidget):
         self.save_timer.start(interval * 1000)
 
     def _save_frame(self):
-        if self._current_frame is not None:
-            fname = time.strftime("webcam_%Y%m%d_%H%M%S.png")
-            path, _ = QFileDialog.getSaveFileName(
-                self.get_custom_widget(),
-                "Save Image",
-                os.path.join(self._save_dir, fname),
-                "PNG Files (*.png)",
-            )
-            if path:
-                cv2.imwrite(path, self._current_frame)
+        # if self._current_frame is not None:
+        #     fname = time.strftime("webcam_%Y%m%d_%H%M%S.png")
+        #     path, _ = QFileDialog.getSaveFileName(
+        #         self.get_custom_widget(),
+        #         "Save Image",
+        #         os.path.join(self._save_dir, fname),
+        #         "PNG Files (*.png)",
+        #     )
+        #     if path:
+        #         cv2.imwrite(path, self._current_frame)
+        pass
 
     def get_value(self):
         return self._webcam_index
