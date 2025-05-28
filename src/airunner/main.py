@@ -10,6 +10,7 @@ Do not change the order of the imports.
 # file system, network and log operations.
 # Keep this at the top of the main file.
 ################################################################
+from airunner.data.models.path_settings import PathSettings
 from airunner.settings import AIRUNNER_DISABLE_FACEHUGGERSHIELD
 import os
 
@@ -34,6 +35,31 @@ if not AIRUNNER_DISABLE_FACEHUGGERSHIELD:
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     airunner_src_path = os.path.join(project_root, "src", "airunner")
 
+    # Detect if running on Windows
+    is_windows = os.name == "nt"
+
+    # Add Windows pyenv site-packages path for OpenCV and other packages if on Windows
+    if is_windows:
+        pyenv_site_packages_path = os.path.join(
+            os.path.dirname(sys.executable), "Lib", "site-packages"
+        )
+        userprofile = os.environ.get("USERPROFILE", "C:\\Users\\Default")
+        windows_local = os.path.join(userprofile, ".local")
+        windows_local_share = os.path.join(userprofile, ".local", "share")
+        windows_paths = [
+            windows_local,
+            windows_local_share,
+            "nul",
+            r"\\.\nul",
+            pyenv_site_packages_path,
+        ]
+        base_path = None
+        path_settings = PathSettings.objects.first()
+        if path_settings:
+            windows_paths.append(path_settings.base_path)
+    else:
+        windows_paths = []
+
     activate(
         activate_shadowlogger=False,
         darklock_os_whitelisted_operations=["makedirs", "mkdir", "open"],
@@ -46,7 +72,8 @@ if not AIRUNNER_DISABLE_FACEHUGGERSHIELD:
             site_packages_path,  # Added site-packages path
             "/usr/share/zoneinfo/",  # Added /usr/share/zoneinfo/
             airunner_src_path,  # Added project src path
-            "/tmp/",  # Added /tmp/ for temporary file operations
+            "/tmp/",  # Added /tmp/ for temporary file operations\
+            *windows_paths,
         ],
         nullscream_whitelist=[
             "huggingface_hub.file_download",
